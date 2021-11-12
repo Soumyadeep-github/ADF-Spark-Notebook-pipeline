@@ -1,0 +1,208 @@
+{
+	"name": "DataBricks-Pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Spark-job-1",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/soumyamyb95@gmail.com/BigDataCourse-order_data",
+					"baseParameters": {
+						"fileName": {
+							"value": "@pipeline().parameters.fileName",
+							"type": "Expression"
+						},
+						"contanierName": {
+							"value": "@pipeline().parameters.contanierName",
+							"type": "Expression"
+						},
+						"storageAccountName": {
+							"value": "@pipeline().parameters.storageAccountName",
+							"type": "Expression"
+						},
+						"sasKey": {
+							"value": "@pipeline().parameters.sasKey",
+							"type": "Expression"
+						},
+						"outputFileName": {
+							"value": "@pipeline().parameters.outputFileName",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Spark-job-1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@pipeline().parameters.outputFileName",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": {
+							"value": "CREATE TABLE @{pipeline().parameters.outputTableName} (\n    Country VARCHAR(100),  \n    CustomerID VARCHAR(100),\n    InvoiceNo VARCHAR(100),\n    Total_Quantity VARCHAR(100),\n    Total_Unit_Price VARCHAR(100)\n)",
+							"type": "Expression"
+						},
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 1
+								},
+								"sink": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 2
+								},
+								"sink": {
+									"name": "CustomerID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 3
+								},
+								"sink": {
+									"name": "InvoiceNo",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 4
+								},
+								"sink": {
+									"name": "Total_Quantity",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 5
+								},
+								"sink": {
+									"name": "Total_Unit_Price",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"tablName": {
+								"value": "@pipeline().parameters.outputTableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"fileName": {
+				"type": "string",
+				"defaultValue": "order_data.csv"
+			},
+			"contanierName": {
+				"type": "string",
+				"defaultValue": "staging"
+			},
+			"storageAccountName": {
+				"type": "string",
+				"defaultValue": "storageaccountdemosm"
+			},
+			"sasKey": {
+				"type": "string",
+				"defaultValue": "?sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupitfx&se=2021-11-15T05:07:14Z&st=2021-11-10T21:07:14Z&spr=https&sig=4bakMzMq01LH5WubFnzlRT8%2BUF%2FbCfsDIAgTIAzU4IM%3D"
+			},
+			"outputFileName": {
+				"type": "string",
+				"defaultValue": "output_file.csv"
+			},
+			"outputTableName": {
+				"type": "string",
+				"defaultValue": "sparkOutput"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-12T08:38:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

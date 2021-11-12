@@ -1,0 +1,9 @@
+{
+	"name": "First-Data-Factory-Learning",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "8ab35bd6-fd44-4130-8850-eddfb364ed5a",
+		"tenantId": "b279e8cf-dcc4-472f-a64a-b99f2f789a5a"
+	}
+}
