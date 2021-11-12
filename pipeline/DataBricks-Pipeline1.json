@@ -45,7 +45,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "spark-output-to-sql",
 				"type": "Copy",
 				"dependsOn": [
 					{
