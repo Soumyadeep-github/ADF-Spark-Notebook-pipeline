@@ -1,0 +1,13 @@
+{
+	"name": "AzureDatabricks2",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-8628193676157296.16.azuredatabricks.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/97ace866-9305-406b-8572-d5c885f420b5/resourceGroups/azurefirstresourcegroup/providers/Microsoft.Databricks/workspaces/Databricks-1",
+			"existingClusterId": "1110-194243-qyarrjmk"
+		}
+	}
+}
