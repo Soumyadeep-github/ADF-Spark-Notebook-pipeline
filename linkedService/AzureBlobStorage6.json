@@ -5,16 +5,6 @@
 		"type": "AzureBlobStorage",
 		"typeProperties": {
 			"serviceEndpoint": "https://storageaccountdemosm.blob.core.windows.net",
-			"tenant": "b279e8cf-dcc4-472f-a64a-b99f2f789a5a",
-			"servicePrincipalId": "c313c326-2b98-44a3-94f3-fe21ace6078f",
-			"servicePrincipalKey": {
-				"type": "AzureKeyVaultSecret",
-				"store": {
-					"referenceName": "AzureKeyVault1",
-					"type": "LinkedServiceReference"
-				},
-				"secretName": "BlobStorageSPKey"
-			},
 			"accountKind": "StorageV2"
 		}
 	}
