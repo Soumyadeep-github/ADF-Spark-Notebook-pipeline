@@ -1,5 +1,5 @@
 {
-	"name": "ParameterisedCopy",
+	"name": "ParameterisedCopywithServicePrincipal",
 	"properties": {
 		"activities": [
 			{
