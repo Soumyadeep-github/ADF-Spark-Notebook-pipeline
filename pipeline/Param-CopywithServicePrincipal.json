@@ -1,5 +1,5 @@
 {
-	"name": "ParameterisedCopywithServicePrincipal",
+	"name": "Param-CopywithServicePrincipal",
 	"properties": {
 		"activities": [
 			{
