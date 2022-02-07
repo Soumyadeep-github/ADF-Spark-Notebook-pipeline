@@ -1,0 +1,126 @@
+{
+	"name": "CopyLastModified-lastday-today",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"modifiedDatetimeStart": {
+								"value": "@adddays(utcnow(), -1)",
+								"type": "Expression"
+							},
+							"modifiedDatetimeEnd": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ParameterisedInputBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"tenant": {
+								"value": "@pipeline().parameters.azTenant",
+								"type": "Expression"
+							},
+							"servicePrincipal": {
+								"value": "@pipeline().parameters.azServicePrincipalApp",
+								"type": "Expression"
+							},
+							"blobName": {
+								"value": "@pipeline().parameters.blobAccessFrom",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ParameterisedInputBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"tenant": {
+								"value": "@pipeline().parameters.azTenant",
+								"type": "Expression"
+							},
+							"servicePrincipal": {
+								"value": "@pipeline().parameters.azServicePrincipalApp",
+								"type": "Expression"
+							},
+							"blobName": {
+								"value": "@pipeline().parameters.blobOutputTo",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"blobAccessFrom": {
+				"type": "string",
+				"defaultValue": "testcon"
+			},
+			"azTenant": {
+				"type": "string",
+				"defaultValue": "b279e8cf-dcc4-472f-a64a-b99f2f789a5a"
+			},
+			"azServicePrincipalApp": {
+				"type": "string",
+				"defaultValue": "c313c326-2b98-44a3-94f3-fe21ace6078f"
+			},
+			"blobOutputTo": {
+				"type": "string",
+				"defaultValue": "testconop"
+			}
+		},
+		"variables": {
+			"dummy": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}

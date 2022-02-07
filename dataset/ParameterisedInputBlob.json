@@ -1,0 +1,45 @@
+{
+	"name": "ParameterisedInputBlob",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ParameterisedBlobStorage",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"tenantID": {
+					"value": "@dataset().tenant",
+					"type": "Expression"
+				},
+				"servicePrincipalID": {
+					"value": "@dataset().servicePrincipal",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"tenant": {
+				"type": "string"
+			},
+			"servicePrincipal": {
+				"type": "string"
+			},
+			"blobName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": {
+					"value": "@dataset().blobName",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
