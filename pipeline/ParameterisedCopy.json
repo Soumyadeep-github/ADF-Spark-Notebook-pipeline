@@ -1,0 +1,127 @@
+{
+	"name": "ParameterisedCopy",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ParameterisedDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"blobName": {
+								"value": "@pipeline().parameters.blobAccessFrom",
+								"type": "Expression"
+							},
+							"azureTenant": {
+								"value": "@pipeline().parameters.azTenant",
+								"type": "Expression"
+							},
+							"azureServicePrincipal": {
+								"value": "@pipeline().parameters.azServicePrincipalApp",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@pipeline().parameters.inputFile",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ParameterisedDataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"blobName": {
+								"value": "@pipeline().parameters.blobOutputTo",
+								"type": "Expression"
+							},
+							"azureTenant": {
+								"value": "@pipeline().parameters.azTenant",
+								"type": "Expression"
+							},
+							"azureServicePrincipal": {
+								"value": "@pipeline().parameters.azServicePrincipalApp",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@pipeline().parameters.outputFile",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"blobAccessFrom": {
+				"type": "string"
+			},
+			"azTenant": {
+				"type": "string"
+			},
+			"azServicePrincipalApp": {
+				"type": "string"
+			},
+			"inputFile": {
+				"type": "string"
+			},
+			"outputFile": {
+				"type": "string"
+			},
+			"blobOutputTo": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"dummy": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
