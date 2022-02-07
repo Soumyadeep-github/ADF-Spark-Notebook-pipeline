@@ -1,0 +1,218 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"modifiedDatetimeStart": "2022-02-06T00:00:00.000Z",
+							"modifiedDatetimeEnd": "2022-02-07T00:00:00.000Z",
+							"wildcardFileName": "*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ParameterisedInputBlob",
+						"type": "DatasetReference",
+						"parameters": {
+							"tenant": {
+								"value": "@pipeline().parameters.azTenant",
+								"type": "Expression"
+							},
+							"servicePrincipal": {
+								"value": "@pipeline().parameters.azServicePrincipalApp",
+								"type": "Expression"
+							},
+							"blobName": {
+								"value": "@pipeline().parameters.blobAccessFrom",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@contains(item().name, '.parquet')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"wildcardFileName": "@item().name",
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".csv"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "ParameterisedInputBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"tenant": {
+														"value": "@pipeline().parameters.azTenant",
+														"type": "Expression"
+													},
+													"servicePrincipal": {
+														"value": "@pipeline().parameters.azServicePrincipalApp",
+														"type": "Expression"
+													},
+													"blobName": {
+														"value": "@pipeline().parameters.blobAccessFrom",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "ParameterisedInputBlob",
+												"type": "DatasetReference",
+												"parameters": {
+													"tenant": {
+														"value": "@pipeline().parameters.azTenant",
+														"type": "Expression"
+													},
+													"servicePrincipal": {
+														"value": "@pipeline().parameters.azServicePrincipalApp",
+														"type": "Expression"
+													},
+													"blobName": {
+														"value": "@pipeline().parameters.blobOutputTo",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "PipelineRunID",
+					"value": "@concat(‘https://management.azure.com/subscriptions/97ace866-9305-406b-8572-d5c885f420b5/resourceGroups/azurefirstresourcegroup/providers/Microsoft.DataFactory/factories/’,pipeline().DataFactory,’/pipelineruns/’,pipeline().RunId,’/cancel?api-version=2018-06-01′"
+				}
+			}
+		],
+		"parameters": {
+			"blobAccessFrom": {
+				"type": "string",
+				"defaultValue": "testcon"
+			},
+			"azTenant": {
+				"type": "string",
+				"defaultValue": "b279e8cf-dcc4-472f-a64a-b99f2f789a5a"
+			},
+			"azServicePrincipalApp": {
+				"type": "string",
+				"defaultValue": "c313c326-2b98-44a3-94f3-fe21ace6078f"
+			},
+			"blobOutputTo": {
+				"type": "string",
+				"defaultValue": "testcon1"
+			}
+		},
+		"variables": {
+			"PipelineRunID": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
