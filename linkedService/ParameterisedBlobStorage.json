@@ -1,0 +1,29 @@
+{
+	"name": "ParameterisedBlobStorage",
+	"properties": {
+		"parameters": {
+			"tenantID": {
+				"type": "string"
+			},
+			"servicePrincipalID": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://storageaccountdemosm.blob.core.windows.net",
+			"tenant": "@{linkedService().tenantID}",
+			"servicePrincipalId": "@{linkedService().servicePrincipalID}",
+			"servicePrincipalKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "BlobStorageSPKey"
+			},
+			"accountKind": "StorageV2"
+		}
+	}
+}
